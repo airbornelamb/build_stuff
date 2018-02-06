@@ -8,13 +8,23 @@
 #    libcairo2-dev libx11-dev libxpm-dev libxt-dev python-dev \
 #    python3-dev ruby-dev lua5.1 lua5.1-dev libperl-dev git
 
-if [[ "$(uname -s)" == "Darwin" ]]; then
-  export NCPUS=`sysctl -n hw.ncpu`
-  echo "Not tested on MacOS. Homebrew provides an up-to-date version of vim."
-  echo "Exiting..."
+distro=`lsb_release --id | cut -f2`
+codename=`lsb_release --codename | cut -f2`
+
+if [[ "$distro" == "Ubuntu" ]]; then
+  echo "deb-src http://us.archive.ubuntu.com/ubuntu/ $codename main restricted" | sudo tee -a /etc/apt/sources.list
+  sudo apt-get update
+  sudo apt-get install -y git build-essential
+  sudo apt-get remove vim vim-runtime gvim vim-tiny vim-common vim-gui-common
+  sudo apt-get build-dep vim
   exit 1
-elif [[ "$(uname -s)" == "Linux" ]]; then
-  export NCPUS=`nproc`
+elif [[ "$distro" == "Fedora" ]]; then
+  sudo yum install -y ruby ruby-devel lua lua-devel luajit \
+    luajit-devel ctags git \
+    python3 python3-devel tcl-devel \
+    perl perl-devel perl-ExtUtils-ParseXS \
+    perl-ExtUtils-XSpp perl-ExtUtils-CBuilder \
+    perl-ExtUtils-Embed
 fi
 
 print_help()
